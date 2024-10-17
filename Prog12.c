@@ -2,19 +2,53 @@
 
 int main()
 {
-    int a, b;
-    char s;
-    do{
-        printf("\t Tabuada\n");
-        printf("Digite um Número entre 2 e 9:");
+    int a, b, resp;
+    char ret = 's', op;
+    
+    printf("\t\tCalculadora\n");
+    
+    while(ret == 's' || ret == 'S'){
+        printf("==>Escolha a operação a ser realizada<==\n");
+        printf("(a)Soma\n");
+        printf("(b)Subtração\n");
+        printf("(c)Multiplicação\n");
+        printf("(d)Divisão\n");
+        scanf("%c", &op);
+        
+        printf("Digite um Número: \n");
         scanf("%i", &a);
-        for(int n = 1; n <= 10; n++){
-            b = a * n;
-            printf("%i * %i = %i\n", a, n, b);
-        }
-        printf("Novo Calculo? (S/N)");
-        scanf(" %c", &s);
-        }
-     while (s == 's' || s == 'S');
-	return 0;
+        printf("Digite um Número: \n");
+        scanf("%i", &b);
+        
+        switch(op){
+            case 'a':
+            case 'A':
+                resp = a + b;
+                printf("Resposta: %i\n", resp);
+                break;
+            case 'b':
+            case 'B':
+                resp = a - b;
+                printf("Resposta: %i\n", resp);
+                break;
+            case 'c':
+            case 'C':
+                resp = a * b;
+                printf("Resposta: %i\n", resp);
+                break;
+            case 'd':
+            case 'D':
+                resp = a / b;
+                printf("Resposta: %i\n", resp);
+                break;
+            default:
+                printf("A letra não corresponde a uma operação\n");
+                break;
+        }    
+          printf("Deseja Continuar? ");
+        scanf(" %c", &ret);
+    }
+    
+      
+    return 0;
 }
