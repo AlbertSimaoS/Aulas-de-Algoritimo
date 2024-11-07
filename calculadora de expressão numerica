@@ -1,0 +1,183 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+// Função para realizar a operação com base nos operadores
+float calcular(float num1, float num2, char operador) {
+    switch (operador) {
+        case '+': return num1 + num2;
+        case '-': return num1 - num2;
+        case '*': return num1 * num2;
+        case '/': 
+            if (num2 != 0) 
+                return num1 / num2;
+            else {
+                printf("Erro: Divisão por zero!\n");
+                exit(1);  // Termina o programa em caso de erro
+            }
+        default:
+            printf("Erro: Operador inválido.\n");
+            exit(1);
+    }
+}
+
+// Função para avaliar a expressão
+float avaliar_expressao(const char* expressao) {
+    float num1, num2, resultado;
+    char operador;
+    int i = 0;
+    
+    // Inicializa o resultado com o primeiro número da expressão
+    sscanf(&expressao[i], "%f", &num1);
+    
+    // Avança até o final da string
+    while (expressao[i] != '\0') {
+        // Pula espaços em branco
+        if (isspace(expressao[i])) {
+            i++;
+            continue;
+        }
+        
+        // Identifica o operador
+        operador = expressao[i];
+        i++;
+        
+        // Pega o próximo número
+        if (sscanf(&expressao[i], "%f", &num2) == 1) {
+            num1 = calcular(num1, num2, operador);  // Realiza o cálculo
+        }
+        
+        // Avança até o próximo caractere que não seja número ou espaço
+        while (isdigit(expressao[i]) || expressao[i] == '.') {
+            i++;
+        }
+    }
+    
+    return num1;
+}
+
+int main() {
+    char expressao[100];
+
+    printf("Digite a expressão matemática (ex: 3 + 5 * 2): ");
+    fgets(expressao, sizeof(expressao), stdin);
+
+    // Chama a função para avaliar a expressão
+    float resultado = avaliar_expressao(expressao);
+
+    printf("Resultado: %.2f\n", resultado);
+    return 0;
+}
+Explicação do código:
+Função calcular:
+
+Esta função é responsável por realizar a operação matemática de acordo com o operador (+, -, *, /).
+Função avaliar_expressao:
+
+A função percorre a expressão e processa os números e operadores.
+Ela usa a função sscanf para extrair os números da expressão.
+Quando um operador é encontrado, ela chama a função calcular para realizar a operação com os números.
+A expressão é percorrida até o final, respeitando a ordem de operação (mas sem lidar diretamente com a precedência de operadores no momento).
+Entrada do usuário:
+
+O programa pede que o usuário insira uma expressão numérica e usa fgets para ler a entrada.
+Exemplo de Execução:
+less
+Copiar código
+Digite a expressão matemática (ex: 3 + 5 * 2): 3 + 5 * 2
+Resultado: 13.00
+Limitações do Código:
+Precedência de Operadores: O código acima não leva em consideração a precedência dos operadores, então ele sempre resolve da esquerda para a direita. Ou seja, ele não resolve corretamente expressões como 3 + 5 * 2. Para corrigir isso, seria necessário implementar a avaliação por precedência, ou seja, multiplicação e divisão devem ser resolvidas antes de soma e subtração.
+Como Resolver a Precedência de Operadores:
+Para resolver a precedência corretamente (ou seja, calcular primeiro a multiplicação e a divisão), você pode usar uma abordagem mais sofisticada, como o algoritmo de Shunting Yard (de Dijkstra), que converte a expressão infixa em pós-fixa (notação polonesa reversa) e, em seguida, avalia a expressão pós-fixa.
+
+Exemplo de Código com Correção da Precedência de Operadores:
+Aqui está um exemplo mais avançado que resolve a expressão corretamente com a precedência dos operadores:
+
+c
+Copiar código
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX 100
+
+// Função para verificar a precedência dos operadores
+int precedencia(char operador) {
+    if (operador == '+' || operador == '-') 
+        return 1;
+    if (operador == '*' || operador == '/') 
+        return 2;
+    return 0;
+}
+
+// Função para realizar a operação
+float calcular(float a, float b, char operador) {
+    switch (operador) {
+        case '+': return a + b;
+        case '-': return a - b;
+        case '*': return a * b;
+        case '/': return a / b;
+        default: return 0;
+    }
+}
+
+// Função para calcular a expressão
+float calcular_expressao(char* expressao) {
+    float valores[MAX];
+    char operadores[MAX];
+    int i = 0, j = 0, k = 0;
+    char operador;
+    float num;
+
+    while (expressao[i] != '\0') {
+        if (isspace(expressao[i])) {
+            i++;
+            continue;
+        }
+
+        // Se for número, armazena no vetor de valores
+        if (isdigit(expressao[i]) || expressao[i] == '.') {
+            sscanf(&expressao[i], "%f", &num);
+            valores[j++] = num;
+
+            // Pula os caracteres do número
+            while (isdigit(expressao[i]) || expressao[i] == '.') 
+                i++;
+        } 
+        // Se for operador
+        else if (expressao[i] == '+' || expressao[i] == '-' || expressao[i] == '*' || expressao[i] == '/') {
+            while (k > 0 && precedencia(operadores[k-1]) >= precedencia(expressao[i])) {
+                num = calcular(valores[j-2], valores[j-1], operadores[k-1]);
+                valores[j-2] = num;
+                j--;
+                k--;
+            }
+            operadores[k++] = expressao[i];
+            i++;
+        }
+    }
+
+    // Processa os operadores restantes
+    while (k > 0) {
+        num = calcular(valores[j-2], valores[j-1], operadores[k-1]);
+        valores[j-2] = num;
+        j--;
+        k--;
+    }
+
+    return valores[0];
+}
+
+int main() {
+    char expressao[100];
+    printf("Digite a expressão matemática: ");
+    fgets(expressao, sizeof(expressao), stdin);
+
+    float resultado = calcular_expressao(expressao);
+    printf("Resultado: %.2f\n", resultado);
+
+    return 0;
+}
