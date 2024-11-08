@@ -1,0 +1,29 @@
+#include <stdio.h>
+
+int main()
+{
+    int VET [5];
+    VET[1] = 23;
+    VET[2] = 56;
+    VET[3] = 15;
+    VET[4] = 34;
+    VET[5] = 67;
+
+    int NUMEROLIDO, POS;
+
+    printf("Digite o número para ser procurado: ");
+    scanf("%d", &NUMEROLIDO);
+    
+    POS = 1;
+    
+    while(VET[POS] != NUMEROLIDO & POS <= 5) {
+        POS = POS + 1;
+    }
+    
+    if (VET[POS] == NUMEROLIDO) {
+        printf("O número %d, está na %dº posição.", NUMEROLIDO, POS);
+    } else {
+        printf("O número %d não consta no vetor", NUMEROLIDO);
+    }
+    return 0;
+}
