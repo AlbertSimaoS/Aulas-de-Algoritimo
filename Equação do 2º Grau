@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <math.h>
+
+// Função para calcular e exibir as raízes de uma equação do 2º grau
+void calculo(float a, float b, float c) {
+    if (a == 0) {
+        printf("Não é uma equação do 2º grau, pois 'a' não pode ser 0.\n");
+        return;
+    }
+
+    float delta = (b * b) - (4 * a * c);
+    printf("Delta = %.2f\n", delta);
+
+    if (delta < 0) {
+        printf("Não existem raízes reais.\n");
+    } else {
+        float x1 = (-b + sqrt(delta)) / (2 * a);
+        float x2 = (-b - sqrt(delta)) / (2 * a);
+        printf("X1 = %.2f\n", x1);
+        printf("X2 = %.2f\n", x2);
+    }
+}
+
+int main() {
+    float a, b, c;
+    char resp = 's';
+
+    while (resp == 's' || resp == 'S') {
+        printf("\033[2J"); // Limpa a tela
+        printf("\033[1;1H"); // Posiciona o cursor
+        printf("Equação do 2º Grau\n");
+        printf("Valor de a: ");
+        scanf("%f", &a);
+        printf("Valor de b: ");
+        scanf("%f", &b);
+        printf("Valor de c: ");
+        scanf("%f", &c);
+
+        // Chama a função para calcular as raízes
+        calculo(a, b, c);
+
+        printf("\nNovo cálculo? (S/N): ");
+        scanf(" %c", &resp); // Espaço antes do %c é importante
+    }
+
+    return 0;
+}
